@@ -2,6 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import ItemLoja from "../components/ItemLoja";
 
 import {Alert} from "react-native";
 import { auth} from '../services/firebaseConfig'
