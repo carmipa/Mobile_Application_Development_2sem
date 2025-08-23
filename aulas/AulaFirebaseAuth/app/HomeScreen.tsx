@@ -2,8 +2,16 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Button, View, Modal, TextInput, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
+<<<<<<< HEAD
 import { auth } from '../services/firebaseConfig';
 import { deleteUser, signOut, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
+=======
+import ItemLoja from "../components/ItemLoja";
+
+import {Alert} from "react-native";
+import { auth} from '../services/firebaseConfig'
+import {deleteUser } from "firebase/auth"
+>>>>>>> 85c02a77da80d99d06573ae0aca43f0d21280e1c
 
 export default function HomeScreen() {
     const router = useRouter();
