@@ -3,17 +3,15 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AlterarSenhaScreen() {
     const [novaSenha, setNovaSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [senhaAtual, setSenhaAtual] = useState('');
-
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleAlterarSenha = async () => {
-        // validações básicas
         if (!senhaAtual || !novaSenha || !confirmarSenha) {
             Alert.alert('Atenção', 'Preencha todos os campos!');
             return;
@@ -28,41 +26,45 @@ export default function AlterarSenhaScreen() {
         }
 
         try {
+            setLoading(true);
             const user = auth.currentUser;
             if (!user || !user.email) {
-                Alert.alert('Erro', 'Nenhum usuário está logado.');
+                Alert.alert('Sessão expirada', 'Faça login novamente.');
+                router.replace('/');
                 return;
             }
 
-            // Reautenticar com a senha atual
             const credential = EmailAuthProvider.credential(user.email, senhaAtual);
             await reauthenticateWithCredential(user, credential);
-
-            // Atualizar senha
             await updatePassword(user, novaSenha);
 
-            // (Opcional) Guardar um marcador local
-            await AsyncStorage.setItem('@lastPasswordChange', new Date().toISOString());
-
             Alert.alert('Sucesso', 'Senha alterada com sucesso!');
-            router.push('/HomeScreen');
+            router.back();
         } catch (error: any) {
-            // Mapeamento simples de erros comuns do Firebase
             const code = error?.code ?? '';
-            let msg = error?.message ?? 'Falha ao alterar a senha.';
-
-            if (code === 'auth/wrong-password') {
-                msg = 'Senha atual incorreta.';
-            } else if (code === 'auth/too-many-requests') {
-                msg = 'Muitas tentativas. Tente novamente mais tarde.';
-            } else if (code === 'auth/weak-password') {
-                msg = 'A nova senha é muito fraca.';
-            } else if (code === 'auth/requires-recent-login') {
-                msg = 'Por segurança, faça login novamente e tente de novo.';
+            console.log("Alterar senha error:", code, error?.message);
+            switch (code) {
+                case 'auth/wrong-password':
+                    Alert.alert('Erro', 'Senha atual incorreta.');
+                    break;
+                case 'auth/too-many-requests':
+                    Alert.alert('Erro', 'Muitas tentativas. Tente novamente mais tarde.');
+                    break;
+                case 'auth/weak-password':
+                    Alert.alert('Erro', 'A nova senha é muito fraca.');
+                    break;
+                case 'auth/requires-recent-login':
+                    Alert.alert('Segurança', 'Faça login novamente para alterar a senha.');
+                    router.replace('/');
+                    break;
+                case 'auth/network-request-failed':
+                    Alert.alert('Sem conexão', 'Conecte-se à internet para alterar a senha.');
+                    break;
+                default:
+                    Alert.alert('Erro', 'Não foi possível alterar a senha.');
             }
-
-            Alert.alert('Erro', msg);
-            console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -100,47 +102,17 @@ export default function AlterarSenhaScreen() {
                 onChangeText={setConfirmarSenha}
             />
 
-            <TouchableOpacity style={styles.botao} onPress={handleAlterarSenha}>
-                <Text style={styles.textoBotao}>Confirmar</Text>
+            <TouchableOpacity style={styles.botao} onPress={handleAlterarSenha} disabled={loading}>
+                <Text style={styles.textoBotao}>{loading ? "Alterando..." : "Alterar Senha"}</Text>
             </TouchableOpacity>
         </View>
     );
 }
 
-// Estilização
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#121212',
-        justifyContent: 'center',
-        padding: 20,
-    },
-    titulo: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#fff',
-        marginBottom: 30,
-        textAlign: 'center',
-    },
-    input: {
-        backgroundColor: '#1E1E1E',
-        color: '#fff',
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 15,
-        fontSize: 16,
-        borderWidth: 1,
-        borderColor: '#333',
-    },
-    botao: {
-        backgroundColor: '#00B37E',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    textoBotao: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+    container: { flex: 1, backgroundColor: '#121212', justifyContent: 'center', padding: 20 },
+    titulo: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 30, textAlign: 'center' },
+    input: { backgroundColor: '#1E1E1E', color: '#fff', borderRadius: 10, padding: 15, marginBottom: 15, fontSize: 16, borderWidth: 1, borderColor: '#333' },
+    botao: { backgroundColor: '#00B37E', padding: 15, borderRadius: 10, alignItems: 'center' },
+    textoBotao: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 });
