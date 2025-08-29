@@ -12,6 +12,8 @@ Este repositório centraliza as aulass desenvolvidas na disciplina **Mobile Apli
    - Padrões de navegação e usabilidade mobile  
    - Integração com APIs e serviços externos  
    - Publicação e ciclo de vida de aplicativos em lojas oficiais
+   - TanQuery
+   - Firebase
      
 ---
 
