@@ -1,0 +1,10 @@
+{
+  "welcome": "Sveiki atvykę",
+  "logout": "Uždaryti sesiją",
+  "deleteAccount": "Ištrinti paskyrą",
+  "confirmDelete": "Ar tikrai norite ištrinti paskyrą?",
+  "cancel": "Atšaukti",
+  "delete": "Ištrinti",
+  "login": "Prisijungti",
+  "password": "Slaptažodis"
+}
