@@ -1,9 +1,13 @@
+import { Timestamp } from 'firebase/firestore';
+
+
 export type Task = {
     id: string;
     title: string;
-    notes?: string;
-    dueDate: string; // formato: YYYY-MM-DD
-    dueTime: string; // formato: HH:mm (24h)
-    done: boolean;
-    scheduledNotificationId?: string; // id retornado pelo Expo Notifications
+    description: string;
+    completed: boolean;
+    dueDate: string; // ISO: "2025-09-10T14:00:00Z"
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+    scheduledNotificationId?: string;
 };

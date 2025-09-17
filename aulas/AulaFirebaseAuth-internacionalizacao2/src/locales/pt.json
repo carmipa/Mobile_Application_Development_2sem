@@ -1,0 +1,10 @@
+{
+  "welcome": "Bem-vindo",
+  "logout": "Sair",
+  "deleteAccount": "Excluir conta",
+  "confirmDelete": "Tem certeza de que deseja excluir a conta?",
+  "cancel": "Cancelar",
+  "delete": "Excluir",
+  "login": "Entrar",
+  "password": "Senha"
+}
